@@ -78,7 +78,7 @@ profile event > flat events > no sound
 
 | Option | Default | Description |
 |---|---:|---|
-| `enabled` | `true` | Enables or disables playback. |
+| `enabled` | `true` | Initial playback state. Runtime state can be changed with `/wololo`. |
 | `soundsDir` | `~/.config/opencode/wololo/sounds` | Base directory for relative sound files. |
 | `debug` | `false` | Prints `[wololo]` debug messages. |
 | `cooldownMs` | `1000` | Global cooldown between sounds. |
@@ -93,6 +93,22 @@ OPENCODE_WOLOLO_SOUNDS_DIR
 OPENCODE_WOLOLO_PROFILE
 OPENCODE_WOLOLO_DEBUG
 ```
+
+## Runtime Command
+
+The plugin automatically registers a `/wololo` command in OpenCode.
+
+```txt
+/wololo
+/wololo on
+/wololo off
+/wololo toggle
+/wololo status
+```
+
+`/wololo` without arguments toggles playback on or off.
+
+This state is runtime-only. It affects the current OpenCode process and does not write back to `opencode.json`.
 
 ## Supported Events
 
