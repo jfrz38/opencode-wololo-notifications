@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    [
+      "opencode-wololo-notifications",
+      {
+        "soundsDir": "~/.config/opencode/wololo/sounds",
+        "events": {
+          "session.idle": "housed.wav",
+          "permission.asked": "villager-select.wav",
+          "session.error": "alarm.wav"
+        }
+      }
+    ]
+  ]
+}
