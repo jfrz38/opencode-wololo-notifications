@@ -1,20 +1,32 @@
 {
   "name": "opencode-wololo-notifications",
   "version": "0.1.0",
-  "description": "Sound notifications for OpenCode, inspired by classic RTS games.",
+  "packageManager": "pnpm@11.1.3",
+  "description": "Custom sound notifications and event audio mapping for OpenCode, with Wololo-inspired presets.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
+    "sounds",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfrz38/opencode-wololo-notifications.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jfrz38/opencode-wololo-notifications/issues"
+  },
+  "homepage": "https://github.com/jfrz38/opencode-wololo-notifications#readme",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "pnpm run clean && tsc -p tsconfig.build.json",
     "test": "vitest run",
     "lint": "tsc --noEmit",
-    "prepublishOnly": "npm run lint && npm run test && npm run build"
+    "prepublishOnly": "pnpm run lint && pnpm run test && pnpm run build"
   },
   "keywords": [
     "opencode",
@@ -29,9 +41,9 @@
     "@opencode-ai/plugin": "*"
   },
   "devDependencies": {
-    "@opencode-ai/plugin": "latest",
-    "@types/node": "latest",
-    "typescript": "latest",
-    "vitest": "latest"
+    "@opencode-ai/plugin": "1.17.7",
+    "@types/node": "25.9.3",
+    "typescript": "6.0.3",
+    "vitest": "4.1.8"
   }
 }
