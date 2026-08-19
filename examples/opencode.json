@@ -5,9 +5,11 @@
       "opencode-wololo-notifications",
       {
         "soundsDir": "~/.config/opencode/wololo/sounds",
+        "enabledEvents": ["session.idle", "session.error", "permission.asked", "question.asked"],
         "events": {
           "session.idle": "housed.wav",
           "permission.asked": "villager-select.wav",
+          "question.asked": "custom-question.wav",
           "session.error": "alarm.wav"
         }
       }
