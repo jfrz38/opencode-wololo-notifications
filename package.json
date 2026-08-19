@@ -28,15 +28,19 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check": "pnpm run lint && pnpm run typecheck",
-    "prepublishOnly": "pnpm run check && pnpm run test && pnpm run build"
+    "verify": "pnpm run check && pnpm run test && pnpm run build",
+    "prepare": "husky",
+    "prepublishOnly": "pnpm run verify"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint"
   },
   "keywords": [
     "opencode",
     "opencode-plugin",
     "notifications",
-    "sound",
     "wololo",
-    "rts"
+    "aoe2"
   ],
   "license": "MIT",
   "peerDependencies": {
@@ -48,6 +52,8 @@
     "@types/node": "25.9.3",
     "eslint": "10.8.1",
     "globals": "17.11.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.3.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.67.0",
     "vitest": "4.1.8"
