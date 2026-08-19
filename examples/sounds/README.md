@@ -2,4 +2,6 @@
 
 Place your own sound files here when testing locally.
 
-This project does not include audio assets from Age of Empires, Age of Empires II, Microsoft, Xbox Game Studios, World’s Edge, or any other protected game content. You are responsible for providing sound files that you have the right to use.
+Custom files in this directory are separate from the bundled fallback sounds. You are responsible for ensuring that you have the right to use and distribute any custom files you add.
+
+See the repository's `THIRD_PARTY_NOTICES.md` for information about bundled audio assets.

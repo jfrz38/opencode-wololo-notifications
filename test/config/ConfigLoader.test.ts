@@ -15,6 +15,7 @@ describe("ConfigLoader", () => {
     expect(config.debug.value).toBe(false);
     expect(config.cooldownMs.value).toBe(1000);
     expect(config.soundsDir.value).toBe(path.join(os.homedir(), ".config/opencode/wololo/sounds"));
+    expect(config.enabledEvents.toArray()).toEqual(["session.idle"]);
   });
 
   it("merges user config over defaults", () => {
@@ -37,6 +38,24 @@ describe("ConfigLoader", () => {
 
     expect(config.defaultProfile?.value).toBe("spanish");
     expect(config.profiles.toRecord().spanish).toEqual({ "session.idle": "housed.wav" });
+  });
+
+  it("normalizes disabled events", () => {
+    const config = new ConfigLoader().load({ disabledEvents: ["tool.*", "", 1] });
+
+    expect(config.disabledEvents.toArray()).toEqual(["tool.*"]);
+  });
+
+  it("preserves an explicitly empty enabled event list", () => {
+    const config = new ConfigLoader().load({ enabledEvents: [] });
+
+    expect(config.enabledEvents.toArray()).toEqual([]);
+  });
+
+  it("normalizes enabled events", () => {
+    const config = new ConfigLoader().load({ enabledEvents: ["permission.*", "", 1] });
+
+    expect(config.enabledEvents.toArray()).toEqual(["permission.*"]);
   });
 
   it("supports environment fallbacks", () => {

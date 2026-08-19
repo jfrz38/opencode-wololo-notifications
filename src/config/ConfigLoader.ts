@@ -3,6 +3,7 @@ import { CooldownMs } from "./CooldownMs.js";
 import { DebugMode } from "./DebugMode.js";
 import { Enabled } from "./Enabled.js";
 import { EnvConfig } from "./EnvConfig.js";
+import { EventPatternSet } from "./EventPatternSet.js";
 import { EventSoundMap } from "./EventSoundMap.js";
 import { ProfileName } from "./ProfileName.js";
 import { ProfileSoundMap } from "./ProfileSoundMap.js";
@@ -16,6 +17,8 @@ export type WololoUserConfig = Partial<{
   defaultProfile: unknown;
   events: unknown;
   profiles: unknown;
+  enabledEvents: unknown;
+  disabledEvents: unknown;
 }>;
 
 export const DEFAULT_CONFIG = {
@@ -23,6 +26,7 @@ export const DEFAULT_CONFIG = {
   soundsDir: "~/.config/opencode/wololo/sounds",
   debug: false,
   cooldownMs: 1000,
+  enabledEvents: ["session.idle"],
 } as const;
 
 export class ConfigLoader {
@@ -41,6 +45,8 @@ export class ConfigLoader {
       defaultProfile,
       EventSoundMap.fromUnknown(options.events),
       ProfileSoundMap.fromUnknown(options.profiles),
+      EventPatternSet.fromUnknown(options.enabledEvents, [...DEFAULT_CONFIG.enabledEvents]),
+      EventPatternSet.fromUnknown(options.disabledEvents),
     );
   }
 }
