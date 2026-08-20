@@ -1,10 +1,21 @@
 # OpenCode Wololo Notifications
 
-Age of Empires II sound notifications for OpenCode, with configurable events and custom audio mappings.
+[![npm](https://img.shields.io/npm/v/@jfrz38/opencode-wololo-notifications)](https://www.npmjs.com/package/@jfrz38/opencode-wololo-notifications)
+[![Build](https://img.shields.io/github/actions/workflow/status/jfrz38/opencode-wololo-notifications/build.yml)](https://github.com/jfrz38/opencode-wololo-notifications/actions/workflows/build.yml)
+[![Source license: MIT](https://img.shields.io/badge/source%20license-MIT-blue)](https://github.com/jfrz38/opencode-wololo-notifications/blob/main/LICENSE)
+[![NPM Downloads](https://img.shields.io/npm/dm/@jfrz38/opencode-wololo-notifications)](https://www.npmjs.com/package/@jfrz38/opencode-wololo-notifications)
 
-This plugin plays sound files when a session becomes idle, a session fails, OpenCode asks for permission, or OpenCode asks the user a question.
+Get audible feedback from OpenCode with recognizable Age of Empires II sounds instead of watching the terminal for every update.
 
-It includes four Age of Empires II game-content `.wav` fallback sounds so a fresh install can produce audio without downloading extra assets. You can still map events to your own local files.
+The plugin can notify you when a session becomes idle, a session fails, OpenCode asks for permission, or OpenCode asks you a question. It includes four bundled `.wav` fallback sounds, so it works without downloading extra assets, and lets you replace them with your own local audio files.
+
+By default, only `session.idle` is enabled and plays `wololo.wav`. You can opt into the other supported events and configure individual sounds or reusable profiles.
+
+## Why?
+
+- Hear when OpenCode is ready for your next instruction while working in another window.
+- Distinguish completed work, errors, permission requests, and questions by sound.
+- Use the bundled Age of Empires II sounds or map events to your own audio files.
 
 ## Installation
 
