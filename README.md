@@ -66,6 +66,26 @@ Put your own sound files in:
 ~/.config/opencode/wololo/sounds/
 ```
 
+You can also omit `soundsDir` and use absolute paths directly in `events`:
+
+```json
+{
+  "plugin": [
+    [
+      "@jfrz38/opencode-wololo-notifications",
+      {
+        "enabledEvents": ["session.idle"],
+        "events": {
+          "session.idle": "/home/you/sounds/housed.wav"
+        }
+      }
+    ]
+  ]
+}
+```
+
+Relative entries such as `"housed.wav"` are resolved from `soundsDir`; absolute entries are used as-is.
+
 ## Profiles
 
 ```json

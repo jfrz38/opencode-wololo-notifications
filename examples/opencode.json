@@ -7,9 +7,9 @@
         "soundsDir": "~/.config/opencode/wololo/sounds",
         "enabledEvents": ["session.idle", "session.error", "permission.asked", "question.asked"],
         "events": {
-          "session.idle": "housed.wav",
-          "permission.asked": "villager-select.wav",
-          "question.asked": "custom-question.wav",
+          "session.idle": "if/not/soundsDir/then/path/to/sound/housed.wav",
+          "permission.asked": "villager-select.mp3",
+          "question.asked": "custom-question.mp3",
           "session.error": "alarm.wav"
         }
       }
