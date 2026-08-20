@@ -1,3 +1,11 @@
+Licensing
+
+The source code and project documentation authored for
+opencode-wololo-notifications are provided under the MIT License below.
+
+The audio files in sounds/ are excluded from the MIT License. See
+THIRD_PARTY_NOTICES.md for their attribution and applicable usage terms.
+
 MIT License
 
 Copyright (c) 2026 José F. Ruiz
