@@ -1,11 +1,17 @@
 {
-  "name": "opencode-wololo-notifications",
+  "name": "@jfrz38/opencode-wololo-notifications",
   "version": "0.1.0",
   "packageManager": "pnpm@11.1.3",
-  "description": "Custom sound notifications and event audio mapping for OpenCode, with Wololo-inspired presets.",
+  "description": "Age of Empires II sound notifications for OpenCode with configurable events and custom audio mappings.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "sounds",
@@ -21,6 +27,9 @@
     "url": "https://github.com/jfrz38/opencode-wololo-notifications/issues"
   },
   "homepage": "https://github.com/jfrz38/opencode-wololo-notifications#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "build": "pnpm run clean && tsc -p tsconfig.build.json",
@@ -39,10 +48,13 @@
     "opencode",
     "opencode-plugin",
     "notifications",
+    "sound",
+    "audio",
     "wololo",
-    "aoe2"
+    "aoe2",
+    "age-of-empires-ii"
   ],
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "peerDependencies": {
     "@opencode-ai/plugin": "*"
   },

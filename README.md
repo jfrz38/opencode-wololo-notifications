@@ -1,29 +1,41 @@
-# opencode-wololo-notifications
+# OpenCode Wololo Notifications
 
-Sound notifications for OpenCode, inspired by classic RTS games.
+Age of Empires II sound notifications for OpenCode, with configurable events and custom audio mappings.
 
 This plugin plays sound files when a session becomes idle, a session fails, OpenCode asks for permission, or OpenCode asks the user a question.
 
 It includes four Age of Empires II game-content `.wav` fallback sounds so a fresh install can produce audio without downloading extra assets. You can still map events to your own local files.
 
-## Install
+> **Status:** Beta. This package has not been published to npm yet.
 
-```bash
-npm install opencode-wololo-notifications
-```
+## Installation
 
-## Configuration
-
-OpenCode currently validates `opencode.json` strictly, so plugin options should be passed using the plugin tuple form:
+Once the package is published, add its scoped npm name to `opencode.json`. OpenCode installs configured npm plugins when it starts:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-wololo-notifications"]
+  "plugin": ["@jfrz38/opencode-wololo-notifications"]
 }
 ```
 
-With no event mapping, only `session.idle` is enabled and uses the bundled `wololo.wav` fallback.
+## Configuration
+
+OpenCode validates `opencode.json` strictly. Use the plugin tuple form when passing options:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    [
+      "@jfrz38/opencode-wololo-notifications",
+      {}
+    ]
+  ]
+}
+```
+
+With no plugin options, only `session.idle` is enabled and uses the bundled `wololo.wav` fallback. Restart OpenCode after changing the plugin build or configuration.
 
 To use your own sound files, pass a `soundsDir` and event map:
 
@@ -32,7 +44,7 @@ To use your own sound files, pass a `soundsDir` and event map:
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
     [
-      "opencode-wololo-notifications",
+      "@jfrz38/opencode-wololo-notifications",
       {
         "soundsDir": "~/.config/opencode/wololo/sounds",
         "enabledEvents": ["session.idle", "session.error", "permission.asked", "question.asked"],
@@ -60,7 +72,7 @@ Put your own sound files in:
 {
   "plugin": [
     [
-      "opencode-wololo-notifications",
+      "@jfrz38/opencode-wololo-notifications",
       {
         "soundsDir": "~/.config/opencode/wololo/sounds",
         "defaultProfile": "spanish",
@@ -84,10 +96,10 @@ Put your own sound files in:
 }
 ```
 
-Resolution priority is:
+Event filtering and sound resolution happen in this order:
 
 ```txt
-enabled event > not disabled > profile event with existing file > flat event with existing file > bundled fallback > no sound
+enabledEvents match > disabledEvents veto > active profile file > flat events file > bundled fallback
 ```
 
 ## Options
@@ -96,7 +108,7 @@ enabled event > not disabled > profile event with existing file > flat event wit
 |---|---:|---|
 | `enabled` | `true` | Enables or disables playback when the plugin starts. |
 | `soundsDir` | `~/.config/opencode/wololo/sounds` | Base directory for relative sound files. |
-| `debug` | `false` | Prints `[wololo]` debug messages. |
+| `debug` | `false` | Enables all `[wololo]` diagnostics, including playback warnings. |
 | `cooldownMs` | `1000` | Global cooldown between sounds. |
 | `defaultProfile` | unset | Profile name to use from `profiles`. |
 | `events` | `{}` | Flat event-to-file map. |
@@ -114,7 +126,7 @@ When `enabledEvents` is omitted, only `session.idle` can play. Set an explicit e
 {
   "plugin": [
     [
-      "opencode-wololo-notifications",
+      "@jfrz38/opencode-wololo-notifications",
       {
         "enabledEvents": []
       }
@@ -129,7 +141,7 @@ To opt into additional bundled or custom sounds, list their event keys:
 {
   "plugin": [
     [
-      "opencode-wololo-notifications",
+      "@jfrz38/opencode-wololo-notifications",
       {
         "enabledEvents": [
           "session.idle",
@@ -153,7 +165,7 @@ Use `disabledEvents` as a final veto for events otherwise allowed by `enabledEve
 {
   "plugin": [
     [
-      "opencode-wololo-notifications",
+      "@jfrz38/opencode-wololo-notifications",
       {
         "disabledEvents": ["session.error"]
       }
@@ -194,15 +206,15 @@ Except for the default `session.idle`, these events must be selected through `en
 
 ## Audio Support
 
-The plugin supports `.wav` cross-platform where possible and `.mp3`/`.ogg` best effort through available players.
+Bundled sounds use `.wav`, which is the portable format supported by the plugin. Custom formats depend on the codecs accepted by the selected system player and are not guaranteed across platforms.
 
-macOS uses `afplay`.
+macOS uses `afplay`; supported custom codecs depend on `afplay`.
 
-Linux tries `paplay`, `aplay`, `mpv`, then `ffplay`.
+Linux tries `paplay`, `aplay`, `mpv`, then `ffplay`; each backend determines which codecs it accepts.
 
 Windows uses PowerShell `Media.SoundPlayer` for `.wav`. Non-`.wav` files are best-effort through `ffplay` if it is available in `PATH`. For maximum compatibility on Windows, use `.wav` files.
 
-Playback is asynchronous relative to OpenCode hooks. While one sound is playing, additional sounds are skipped, and a player process is stopped after 10 seconds if it does not exit.
+Playback is asynchronous relative to OpenCode hooks. While one sound is playing, additional sounds are skipped. If a player candidate has not exited after 10 seconds, the plugin requests its termination before trying the next candidate.
 
 ## Troubleshooting
 
@@ -210,7 +222,7 @@ Playback is asynchronous relative to OpenCode hooks. While one sound is playing,
 - Linux needs one of `paplay`, `aplay`, `mpv`, or `ffplay` for audio output.
 - macOS uses the built-in `afplay` command.
 - If you change plugin files or config, restart OpenCode because plugins are loaded at startup.
-- Enable `debug` to see which event resolved to which sound path.
+- Enable `debug` to see event resolution and playback warnings. All plugin diagnostics are silent when `debug` is disabled.
 
 ## Note About `session.idle`
 
@@ -223,7 +235,10 @@ Enable debug mode to see plugin decisions:
 ```json
 {
   "plugin": [
-    ["opencode-wololo-notifications", { "debug": true }]
+    [
+      "@jfrz38/opencode-wololo-notifications",
+      { "debug": true }
+    ]
   ]
 }
 ```
@@ -232,13 +247,18 @@ Example output:
 
 ```txt
 [wololo] event=session.idle profile=spanish sound=/path/to/housed.wav
-[wololo] no configured sound for event=question.asked
 [wololo] audio player ffplay timed out after 10000ms
 ```
 
-## Local Testing
+## Development
 
-Run `pnpm install --frozen-lockfile`, `pnpm run lint`, `pnpm test`, and `pnpm run build`. For local OpenCode testing before npm publishing, load the built plugin from a local file or copy a plugin entry into `.opencode/plugins/`. Restart OpenCode after changing plugin files or config because plugins are loaded at startup.
+The project is currently tested against `@opencode-ai/plugin` 1.17.7. Run the complete validation pipeline with:
+
+```bash
+pnpm run verify
+```
+
+This runs ESLint, TypeScript typechecking, unit tests, and a clean build. Install dependencies with `pnpm install --frozen-lockfile` before the first run. Restart OpenCode after rebuilding or changing plugin configuration.
 
 ## Legal notice
 

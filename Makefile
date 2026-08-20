@@ -16,15 +16,18 @@ clean: ## clean build artifacts
 build: ## compile the project
 	pnpm run build
 
-.PHONY: lint test check ci
-lint: ## run TypeScript type checking
+.PHONY: lint typecheck test check ci
+lint: ## run ESLint
 	pnpm run lint
+
+typecheck: ## run TypeScript type checking
+	pnpm run typecheck
 
 test: ## run unit tests
 	pnpm test
 
-check: ## run lint, tests, and build
-	pnpm run prepublishOnly
+check: ## run lint, typecheck, tests, and build
+	pnpm run verify
 
 ci: install-frozen check ## install from lockfile and run all checks
 
