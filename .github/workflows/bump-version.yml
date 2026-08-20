@@ -1,0 +1,57 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version component to bump
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      base_branch:
+        description: Branch that will receive the bump pull request
+        required: true
+        default: develop
+        type: choice
+        options:
+          - develop
+          - main
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out base branch
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ inputs.base_branch }}
+          fetch-depth: 0
+
+      - name: Bump package version
+        id: bump
+        uses: jfrz38/auto-version-bump-action@504f680040d560c7f9314ed291a3a41c21c0facd # v0
+        with:
+          bump: ${{ inputs.bump }}
+          base-branch: ${{ inputs.base_branch }}
+          strategy: npm
+          version-file: package.json
+          commit-message: 'chore: bump version to {version}'
+          pr-title: 'bump: bump to {version}'
+          pr-body: 'Bumps version from {current-version} to {next-version} using a {bump} release bump.'
+
+      - name: Run checks for bump branch
+        env:
+          BRANCH: ${{ steps.bump.outputs.branch }}
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run build.yml --ref "$BRANCH"

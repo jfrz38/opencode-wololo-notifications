@@ -1,0 +1,6 @@
+saveExact: true
+
+enableGlobalVirtualStore: false
+
+allowBuilds:
+  msgpackr-extract: true

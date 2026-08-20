@@ -1,0 +1,73 @@
+{
+  "name": "@jfrz38/opencode-wololo-notifications",
+  "version": "0.1.0",
+  "packageManager": "pnpm@11.1.3",
+  "description": "Age of Empires II sound notifications for OpenCode with configurable events and custom audio mappings.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "sounds",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfrz38/opencode-wololo-notifications.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jfrz38/opencode-wololo-notifications/issues"
+  },
+  "homepage": "https://github.com/jfrz38/opencode-wololo-notifications#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "pnpm run clean && tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm run lint && pnpm run typecheck",
+    "verify": "pnpm run check && pnpm run test && pnpm run build",
+    "prepare": "husky",
+    "prepublishOnly": "pnpm run verify"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "notifications",
+    "sound",
+    "audio",
+    "wololo",
+    "aoe2",
+    "age-of-empires-ii"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "peerDependencies": {
+    "@opencode-ai/plugin": "*"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@opencode-ai/plugin": "1.17.7",
+    "@types/node": "25.9.3",
+    "eslint": "10.8.1",
+    "globals": "17.11.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.3.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0",
+    "vitest": "4.1.8"
+  }
+}
