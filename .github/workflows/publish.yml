@@ -1,0 +1,107 @@
+name: Publish Package
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-npm
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Verify workflow runs from main
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "Publish must be run from main. Current ref is $GITHUB_REF" >&2
+            exit 1
+          fi
+
+      - name: Resolve latest release
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq '.tag_name')"
+          if [ -z "$TAG" ]; then
+            echo "No GitHub release found." >&2
+            exit 1
+          fi
+
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Verify GitHub release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: gh release view "$TAG" --repo "$GITHUB_REPOSITORY"
+
+      - name: Check out release tag
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+          fetch-depth: 0
+
+      - name: Verify release tag is on main
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git fetch origin main --tags
+          if ! git merge-base --is-ancestor "$TAG" origin/main; then
+            echo "Release tag $TAG is not reachable from main" >&2
+            exit 1
+          fi
+
+      - name: Verify package version matches release
+        env:
+          EXPECTED_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          if [ "$PACKAGE_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "Release version $EXPECTED_VERSION does not match package version $PACKAGE_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Check version is not already published
+        uses: jfrz38/check-version-change@80c2b258363f69c3c952e05d6feaeab481f55e7f # v1.3.0
+        with:
+          file-path: package.json
+          package-name: '@jfrz38/opencode-wololo-notifications'
+          compare-source: registry
+          registry: npm
+          fail-on-unchanged: true
+          fail-on-not-higher: true
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.10
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22.x'
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install npm with OIDC support
+        run: npm install --global npm@11
+
+      - name: Install dependencies and run checks
+        run: make ci
+
+      - name: Verify npm package contents
+        run: npm publish --dry-run --access public
+
+      - name: Publish to npm
+        env:
+          NPM_CONFIG_PROVENANCE: 'false'
+        run: npm publish --access public
