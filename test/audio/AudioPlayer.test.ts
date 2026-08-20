@@ -116,7 +116,7 @@ describe("AudioPlayer", () => {
 
     expect(kill).toHaveBeenCalledOnce();
     expect(logger.debug).toHaveBeenCalledWith("audio player powershell.exe timed out after 100ms");
-    expect(logger.warn).toHaveBeenCalledWith("no supported audio player worked for platform=win32");
+    expect(logger.warn).toHaveBeenCalledWith(`no supported audio player worked for platform=${process.platform}`);
   });
 
   it("does not throw when spawn fails", async () => {
@@ -127,7 +127,7 @@ describe("AudioPlayer", () => {
 
     await expect(new AudioPlayer(config, logger, new Cooldown(config.cooldownMs), new PlayerCommandResolver("win32")).play("/sounds/a.wav")).resolves.toBeUndefined();
 
-    expect(logger.warn).toHaveBeenCalledWith("no supported audio player worked for platform=win32");
+    expect(logger.warn).toHaveBeenCalledWith(`no supported audio player worked for platform=${process.platform}`);
     expect(logger.debug).toHaveBeenCalledWith("audio player powershell.exe failed: boom");
   });
 
