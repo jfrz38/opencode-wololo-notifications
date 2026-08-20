@@ -6,11 +6,9 @@ This plugin plays sound files when a session becomes idle, a session fails, Open
 
 It includes four Age of Empires II game-content `.wav` fallback sounds so a fresh install can produce audio without downloading extra assets. You can still map events to your own local files.
 
-> **Status:** Beta. This package has not been published to npm yet.
-
 ## Installation
 
-Once the package is published, add its scoped npm name to `opencode.json`. OpenCode installs configured npm plugins when it starts:
+Add the scoped npm package name to `opencode.json`. OpenCode installs configured npm plugins when it starts:
 
 ```json
 {
@@ -88,6 +86,10 @@ Relative entries such as `"housed.wav"` are resolved from `soundsDir`; absolute 
 
 ## Profiles
 
+`profiles` lets you define named groups of event-to-sound mappings. `defaultProfile` selects which profile is active.
+
+Profiles do not enable events by themselves. An event still needs to match `enabledEvents`, and it can still be blocked by `disabledEvents`.
+
 ```json
 {
   "plugin": [
@@ -116,6 +118,8 @@ Relative entries such as `"housed.wav"` are resolved from `soundsDir`; absolute 
 }
 ```
 
+To disable profile-specific mappings, omit `defaultProfile` or remove it. The plugin will then use the flat `events` map, if present, before falling back to bundled sounds.
+
 Event filtering and sound resolution happen in this order:
 
 ```txt
@@ -130,9 +134,9 @@ enabledEvents match > disabledEvents veto > active profile file > flat events fi
 | `soundsDir` | `~/.config/opencode/wololo/sounds` | Base directory for relative sound files. |
 | `debug` | `false` | Enables all `[wololo]` diagnostics, including playback warnings. |
 | `cooldownMs` | `1000` | Global cooldown between sounds. |
-| `defaultProfile` | unset | Profile name to use from `profiles`. |
+| `defaultProfile` | unset | Active profile name from `profiles`. Omit it to disable profile-specific mappings. |
 | `events` | `{}` | Flat event-to-file map. |
-| `profiles` | `{}` | Profile event maps. |
+| `profiles` | `{}` | Named event-to-file maps. Only the profile selected by `defaultProfile` is used. |
 | `enabledEvents` | `["session.idle"]` | Event keys or wildcard patterns allowed to play sounds. An explicit empty array disables all event sounds. |
 | `disabledEvents` | `[]` | Event keys or wildcard patterns that must never play sounds. |
 
