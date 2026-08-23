@@ -6,7 +6,7 @@ import { ConsoleLogger } from "./logger/ConsoleLogger.js";
 import { WololoPluginHooks } from "./plugin/WololoPluginHooks.js";
 import { NotificationState } from "./runtime/NotificationState.js";
 
-export default (async (_input, options) => {
+export default (async (input, options) => {
   const config = new ConfigLoader().load(options);
   const logger = new ConsoleLogger(config.debug.value);
   const notificationState = new NotificationState(config.isEnabled());
@@ -17,5 +17,6 @@ export default (async (_input, options) => {
     notificationState,
     soundResolver: new SoundResolver(config),
     audioPlayer: new AudioPlayer(config, logger),
+    client: input.client,
   }).create();
 }) satisfies Plugin;

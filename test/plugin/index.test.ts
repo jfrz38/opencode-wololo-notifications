@@ -18,14 +18,21 @@ describe("WololoNotificationsPlugin", () => {
   });
 
   it("disabled config prevents playback", async () => {
-    const hooks = await WololoNotificationsPlugin({} as never, {
+    const sessionGet = vi.fn();
+    const hooks = await WololoNotificationsPlugin({ client: { session: { get: sessionGet } } } as never, {
       enabled: false,
       events: { "session.idle": "housed.wav" },
     });
 
-    await hooks.event?.({ event: { type: "session.idle" } as never });
+    await hooks.event?.({
+      event: {
+        type: "session.status",
+        properties: { sessionID: "session-root", status: { type: "idle" } },
+      },
+    });
 
     const player = vi.mocked(AudioPlayer).mock.results[0]?.value;
+    expect(sessionGet).not.toHaveBeenCalled();
     expect(player.play).not.toHaveBeenCalled();
   });
 

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import type { PluginInput } from "@opencode-ai/plugin";
 import type { AudioPlayer } from "../../src/audio/AudioPlayer.js";
 import { CooldownMs } from "../../src/config/CooldownMs.js";
 import { DebugMode } from "../../src/config/DebugMode.js";
@@ -29,12 +30,15 @@ function config(): WololoConfig {
 
 function dependencies(input: { enabled?: boolean; sound?: string | undefined } = {}) {
   const notificationState = new NotificationState(input.enabled ?? true);
+  const sessionGet = vi.fn().mockResolvedValue({ data: { id: "session-root" } });
   return {
     config: config(),
     logger: { debug: vi.fn(), warn: vi.fn() } satisfies Logger,
     notificationState,
     soundResolver: { resolve: vi.fn(() => input.sound) } as unknown as SoundResolver,
     audioPlayer: { play: vi.fn() } as unknown as AudioPlayer,
+    client: { session: { get: sessionGet } } as unknown as PluginInput["client"],
+    sessionGet,
   };
 }
 
@@ -43,20 +47,114 @@ describe("WololoPluginHooks", () => {
     const deps = dependencies({ enabled: false, sound: "/sounds/housed.wav" });
     const hooks = new WololoPluginHooks(deps).create();
 
-    await hooks.event?.({ event: { type: "session.idle" } as never });
+    await hooks.event?.({
+      event: {
+        type: "session.status",
+        properties: { sessionID: "session-root", status: { type: "idle" } },
+      },
+    });
+
+    expect(deps.sessionGet).not.toHaveBeenCalled();
+    expect(deps.soundResolver.resolve).not.toHaveBeenCalled();
+    expect(deps.audioPlayer.play).not.toHaveBeenCalled();
+  });
+
+  it("plays the configured idle sound for a root session", async () => {
+    const deps = dependencies({ sound: "/sounds/housed.wav" });
+    const hooks = new WololoPluginHooks(deps).create();
+
+    await hooks.event?.({
+      event: {
+        type: "session.status",
+        properties: { sessionID: "session-root", status: { type: "idle" } },
+      },
+    });
+
+    expect(deps.sessionGet).toHaveBeenCalledWith({ path: { id: "session-root" } });
+    expect(deps.soundResolver.resolve).toHaveBeenCalledWith("session.idle");
+    expect(deps.audioPlayer.play).toHaveBeenCalledWith("/sounds/housed.wav");
+  });
+
+  it("does not play the idle sound for a child session", async () => {
+    const deps = dependencies({ sound: "/sounds/housed.wav" });
+    deps.sessionGet.mockResolvedValue({ data: { id: "session-child", parentID: "session-root" } });
+    const hooks = new WololoPluginHooks(deps).create();
+
+    await hooks.event?.({
+      event: {
+        type: "session.status",
+        properties: { sessionID: "session-child", status: { type: "idle" } },
+      },
+    });
 
     expect(deps.soundResolver.resolve).not.toHaveBeenCalled();
     expect(deps.audioPlayer.play).not.toHaveBeenCalled();
   });
 
-  it("plays configured event sound when notifications are enabled", async () => {
+  it("ignores non-idle session statuses", async () => {
     const deps = dependencies({ sound: "/sounds/housed.wav" });
     const hooks = new WololoPluginHooks(deps).create();
 
-    await hooks.event?.({ event: { type: "session.idle" } as never });
+    await hooks.event?.({
+      event: {
+        type: "session.status",
+        properties: { sessionID: "session-root", status: { type: "busy" } },
+      },
+    });
 
-    expect(deps.soundResolver.resolve).toHaveBeenCalledWith("session.idle");
-    expect(deps.audioPlayer.play).toHaveBeenCalledWith("/sounds/housed.wav");
+    expect(deps.sessionGet).not.toHaveBeenCalled();
+    expect(deps.soundResolver.resolve).not.toHaveBeenCalled();
+    expect(deps.audioPlayer.play).not.toHaveBeenCalled();
+  });
+
+  it("does not play when the session lookup returns no data", async () => {
+    const deps = dependencies({ sound: "/sounds/housed.wav" });
+    deps.sessionGet.mockResolvedValue({ data: undefined });
+    const hooks = new WololoPluginHooks(deps).create();
+
+    await hooks.event?.({
+      event: {
+        type: "session.status",
+        properties: { sessionID: "session-root", status: { type: "idle" } },
+      },
+    });
+
+    expect(deps.logger.warn).toHaveBeenCalledWith(
+      "unable to determine parent for session=session-root",
+    );
+    expect(deps.audioPlayer.play).not.toHaveBeenCalled();
+  });
+
+  it("does not play or reject when the session lookup fails", async () => {
+    const deps = dependencies({ sound: "/sounds/housed.wav" });
+    deps.sessionGet.mockRejectedValue(new Error("connection failed"));
+    const hooks = new WololoPluginHooks(deps).create();
+
+    await expect(
+      hooks.event?.({
+        event: {
+          type: "session.status",
+          properties: { sessionID: "session-root", status: { type: "idle" } },
+        },
+      }),
+    ).resolves.toBeUndefined();
+    expect(deps.logger.warn).toHaveBeenCalledWith(
+      "unable to determine parent for session=session-root",
+    );
+    expect(deps.audioPlayer.play).not.toHaveBeenCalled();
+  });
+
+  it("ignores the legacy session.idle event", async () => {
+    const deps = dependencies({ sound: "/sounds/housed.wav" });
+    const hooks = new WololoPluginHooks(deps).create();
+
+    await hooks.event?.({
+      event: { type: "session.idle", properties: { sessionID: "session-root" } },
+    });
+
+    expect(deps.sessionGet).not.toHaveBeenCalled();
+    expect(deps.soundResolver.resolve).not.toHaveBeenCalled();
+    expect(deps.audioPlayer.play).not.toHaveBeenCalled();
   });
 
   it("handles permission.asked", async () => {
