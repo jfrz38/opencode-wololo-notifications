@@ -40,7 +40,7 @@ jobs:
 
       - name: Bump package version
         id: bump
-        uses: jfrz38/auto-version-bump-action@504f680040d560c7f9314ed291a3a41c21c0facd # v0
+        uses: jfrz38/version-bump-action@v0
         with:
           bump: ${{ inputs.bump }}
           base-branch: ${{ inputs.base_branch }}
