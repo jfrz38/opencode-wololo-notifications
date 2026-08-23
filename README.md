@@ -19,7 +19,13 @@ By default, only `session.idle` is enabled and plays `wololo.wav`. You can opt i
 
 ## Installation
 
-Add the scoped npm package name to `opencode.json`. OpenCode installs configured npm plugins when it starts:
+Install via CLI:
+
+```bash
+opencode plugin @jfrz38/opencode-wololo-notifications@latest --global 
+```
+
+Or add the scoped npm package name to `opencode.json`. OpenCode installs configured npm plugins when it starts:
 
 ```json
 {
