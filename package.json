@@ -60,14 +60,14 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@opencode-ai/plugin": "1.17.7",
+    "@opencode-ai/plugin": "1.18.23",
     "@types/node": "26.3.0",
-    "eslint": "10.8.1",
+    "eslint": "10.9.1",
     "globals": "17.11.0",
     "husky": "9.1.7",
     "lint-staged": "17.3.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.67.0",
-    "vitest": "4.1.8"
+    "typescript-eslint": "8.68.0",
+    "vitest": "4.1.11"
   }
 }
