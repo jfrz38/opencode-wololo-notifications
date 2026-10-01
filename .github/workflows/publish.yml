@@ -72,7 +72,7 @@ jobs:
           fi
 
       - name: Check version is not already published
-        uses: jfrz38/check-version-change@80c2b258363f69c3c952e05d6feaeab481f55e7f # v1.3.0
+        uses: jfrz38/check-version-change@712f1f323f716ff1241b4fdd99e698d56daf462d # v1.4.0
         with:
           file-path: package.json
           package-name: '@jfrz38/opencode-wololo-notifications'
@@ -82,7 +82,7 @@ jobs:
           fail-on-not-higher: true
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v6.0.10
+        uses: pnpm/action-setup@v6.1.0
 
       - name: Setup Node
         uses: actions/setup-node@v7
