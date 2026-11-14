@@ -40,9 +40,10 @@ jobs:
 
       - name: Bump package version
         id: bump
-        uses: jfrz38/version-bump-action@v0
+        uses: jfrz38/auto-version-bump-action@7a76804803c0ae5dc7c5d8d1ac7bfcf4fbbb4d6f # v0.4.0
         with:
           bump: ${{ inputs.bump }}
+          changelog: git-cliff
           base-branch: ${{ inputs.base_branch }}
           strategy: npm
           version-file: package.json
