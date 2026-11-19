@@ -1,5 +1,11 @@
 # OpenCode Wololo Notifications
 
+> [!WARNING]
+> **Deprecated.** OpenCode 2 includes native notification sounds in the TUI.
+> Configure `attention.sounds` in `~/.config/opencode/cli.json` instead.
+> This package targets the OpenCode 1 plugin API, does not run on OpenCode 2,
+> and is no longer maintained.
+
 [![npm](https://img.shields.io/npm/v/@jfrz38/opencode-wololo-notifications)](https://www.npmjs.com/package/@jfrz38/opencode-wololo-notifications)
 [![Build](https://img.shields.io/github/actions/workflow/status/jfrz38/opencode-wololo-notifications/build.yml)](https://github.com/jfrz38/opencode-wololo-notifications/actions/workflows/build.yml)
 [![Source license: MIT](https://img.shields.io/badge/source%20license-MIT-blue)](https://github.com/jfrz38/opencode-wololo-notifications/blob/main/LICENSE)
@@ -10,6 +16,37 @@ Get audible feedback from OpenCode with recognizable Age of Empires II sounds in
 The plugin can notify you when a session becomes idle, a session fails, OpenCode asks for permission, or OpenCode asks you a question. It includes four bundled `.wav` fallback sounds, so it works without downloading extra assets, and lets you replace them with your own local audio files.
 
 By default, only `session.idle` is enabled and plays `wololo.wav`. You can opt into the other supported events and configure individual sounds or reusable profiles.
+
+## Native replacement in OpenCode 2
+
+OpenCode 2 provides system notifications and attention sounds directly in the TUI. Configure them in `~/.config/opencode/cli.json`; `opencode.json` is not involved.
+
+```json
+{
+  "$schema": "https://opencode.ai/v2/cli.json",
+  "attention": {
+    "notifications": true,
+    "sound": true,
+    "volume": 0.4,
+    "sound_pack": "opencode.default",
+    "sounds": {
+      "done": "/absolute/path/to/done.wav",
+      "permission": "/absolute/path/to/permission.wav",
+      "question": "/absolute/path/to/question.wav",
+      "error": "/absolute/path/to/error.wav",
+      "subagent_done": "/absolute/path/to/subagent-done.wav"
+    }
+  }
+}
+```
+
+`attention.sounds` accepts `default`, `question`, `permission`, `error`, `done`, and `subagent_done`. Invalid or unreadable files fall back to the built-in sound. See [CLI Settings → Alerts](https://opencode.ai/docs/cli/config#alerts).
+
+The bundled `.wav` files in this repository can still be used as values in `attention.sounds`.
+
+## Legacy usage (OpenCode 1.x)
+
+The rest of this document is retained for historical reference. The package targets the OpenCode 1 plugin API; the instructions below do not apply to OpenCode 2.
 
 ## Why?
 
